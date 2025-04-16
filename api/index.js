@@ -1,9 +1,8 @@
 const express= require('express');
-const serverless = require("serverless-http"); // ✅ Important for Vercel
 const app= express();
 const cors= require('cors');
 
-app.use(cors({origin: '*'}));
+app.use(cors());
 app.use(express.json()); // ✅ for parsing JSON payloads
 
 const mongoose= require('mongoose');
@@ -32,4 +31,4 @@ app.use('/api/projects',projectRoutes);
 //     console.log('Server is running on port 4000');
 // })
 
-module.exports = serverless(app);
+module.exports = app;
