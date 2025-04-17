@@ -12,6 +12,7 @@ router.post('/newProject', async (req, res) => {
       data: project
     });
   } catch (err) {
+    console.error('Error creating project:', err);
     res.status(500).json({
       success: false,
       message: 'Failed to create project',

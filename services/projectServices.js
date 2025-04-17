@@ -8,30 +8,35 @@ let counter = 0;
 class ProjectService {
   // 📌 Create a new project
   async create(projectData) {
-    const now = new Date();
-    const monthYear = `${now.getMonth() + 1}${now.getFullYear()}`; // Format MM-YYYY
+    try {
+      const now = new Date();
+      const monthYear = `${now.getMonth() + 1}${now.getFullYear()}`; // Format MM-YYYY
 
-    // Check if the month has changed, and reset the counter
-    if (monthYear !== currentMonth) {
-      currentMonth = monthYear;
-      counter = 0; // Reset counter for the new month
+      // Check if the month has changed, and reset the counter
+      if (monthYear !== currentMonth) {
+        currentMonth = monthYear;
+        counter = 0; // Reset counter for the new month
+      }
+
+      // Increment the counter
+      counter++;
+
+      // Format the counter to be 3 digits (e.g., 001, 002, 003)
+      const count = counter.toString().padStart(3, '0');
+
+      // Generate the reference ID: cmt-MM-YYYY-XXX
+      const referenceId = `CMT-${monthYear}-${count}`;
+
+      // Add the reference ID to the project data
+      projectData.referenceId = referenceId;
+
+      // Create and save the new project with the generated reference ID
+      const project = new Project(projectData);
+      return await project.save();
+    } catch (error) {
+      console.error('Error in project service create:', error);
+      throw error;
     }
-
-    // Increment the counter
-    counter++;
-
-    // Format the counter to be 3 digits (e.g., 001, 002, 003)
-    const count = counter.toString().padStart(3, '0');
-
-    // Generate the reference ID: cmt-MM-YYYY-XXX
-    const referenceId = `CMT-${monthYear}-${count}`;
-
-    // Add the reference ID to the project data
-    projectData.referenceId = referenceId;
-
-    // Create and save the new project with the generated reference ID
-    const project = new Project(projectData);
-    return await project.save();
   }
 
   // 📌 Get all projects (with optional filter)
