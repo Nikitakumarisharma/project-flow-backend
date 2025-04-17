@@ -2,42 +2,43 @@ const { Project } = require('../models/projectModel');
 const { User } = require('../models/userModel'); // Assuming you have the User model
 
 
-let currentMonth = '';  // To store the current month and year
-let counter = 0; 
+
 
 class ProjectService {
   // 📌 Create a new project
   async create(projectData) {
     try {
       const now = new Date();
-      const monthYear = `${now.getMonth() + 1}${now.getFullYear()}`; // Format MM-YYYY
-
-      // Check if the month has changed, and reset the counter
-      if (monthYear !== currentMonth) {
-        currentMonth = monthYear;
-        counter = 0; // Reset counter for the new month
+      const monthYear = `${now.getMonth() + 1}${now.getFullYear()}`; // MMYYYY
+      const prefix = `CMT-${monthYear}-`;
+  
+      // 🟢 Find the highest referenceId for the current month
+      const latestProject = await Project.findOne({
+        referenceId: { $regex: `^${prefix}` }
+      }).sort({ referenceId: -1 });
+  
+      let nextCounter = 1;
+  
+      if (latestProject) {
+        const lastRefId = latestProject.referenceId;
+        const lastCounter = parseInt(lastRefId.split('-')[2]);
+        nextCounter = lastCounter + 1;
       }
-
-      // Increment the counter
-      counter++;
-
-      // Format the counter to be 3 digits (e.g., 001, 002, 003)
-      const count = counter.toString().padStart(3, '0');
-
-      // Generate the reference ID: cmt-MM-YYYY-XXX
-      const referenceId = `CMT-${monthYear}-${count}`;
-
-      // Add the reference ID to the project data
+  
+      const paddedCounter = nextCounter.toString().padStart(3, '0');
+      const referenceId = `${prefix}${paddedCounter}`;
+  
       projectData.referenceId = referenceId;
-
-      // Create and save the new project with the generated reference ID
+  
       const project = new Project(projectData);
       return await project.save();
+  
     } catch (error) {
       console.error('Error in project service create:', error);
       throw error;
     }
   }
+  
 
   // 📌 Get all projects (with optional filter)
   async findAll(filter = {}) {
