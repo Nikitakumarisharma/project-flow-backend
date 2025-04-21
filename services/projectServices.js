@@ -13,7 +13,7 @@ class ProjectService {
         throw new Error('Client phone number is required to generate referenceId');
       }
   
-      const referenceId = `CMT-${clientPhone}`;
+      const referenceId = `${clientPhone}`;
       projectData.referenceId = referenceId;
   
       const project = new Project(projectData);
