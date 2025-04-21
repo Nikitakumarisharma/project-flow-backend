@@ -16,12 +16,12 @@ mongoose.connect(
   .then(() => console.log('✅ MongoDB Atlas connected!'))
   .catch((err) => console.error('❌ MongoDB connection error:', err.message));
 
-const Post_route= require('../routes/postRoute');
+// const Post_route= require('../routes/postRoute');
 const userRoutes= require('../routes/userRoute');
 const authRoutes= require('../routes/authRoute');
 const projectRoutes= require('../routes/projectRoute');
 
-app.use('/api',Post_route);
+// app.use('/api',Post_route);
 app.use('/api/users',userRoutes);
 app.use('/api/auth',authRoutes);
 app.use('/api/projects',projectRoutes);

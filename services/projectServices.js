@@ -8,26 +8,12 @@ class ProjectService {
   // 📌 Create a new project
   async create(projectData) {
     try {
-      const now = new Date();
-      const monthYear = `${now.getMonth() + 1}${now.getFullYear()}`; // MMYYYY
-      const prefix = `CMT-${monthYear}-`;
-  
-      // 🟢 Find the highest referenceId for the current month
-      const latestProject = await Project.findOne({
-        referenceId: { $regex: `^${prefix}` }
-      }).sort({ referenceId: -1 });
-  
-      let nextCounter = 1;
-  
-      if (latestProject) {
-        const lastRefId = latestProject.referenceId;
-        const lastCounter = parseInt(lastRefId.split('-')[2]);
-        nextCounter = lastCounter + 1;
+      const clientPhone = projectData.clientPhone;
+      if (!clientPhone) {
+        throw new Error('Client phone number is required to generate referenceId');
       }
   
-      const paddedCounter = nextCounter.toString().padStart(3, '0');
-      const referenceId = `${prefix}${paddedCounter}`;
-  
+      const referenceId = `CMT-${clientPhone}`;
       projectData.referenceId = referenceId;
   
       const project = new Project(projectData);
@@ -38,6 +24,7 @@ class ProjectService {
       throw error;
     }
   }
+  
   
 
   // 📌 Get all projects (with optional filter)
